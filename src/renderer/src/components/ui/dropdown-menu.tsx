@@ -5,9 +5,11 @@ import {
   useState,
   useRef,
   useEffect,
+  useCallback,
   type ReactNode,
   type FC
 } from 'react'
+import { createPortal } from 'react-dom'
 
 interface DropdownContextValue {
   open: boolean
@@ -26,7 +28,7 @@ export function DropdownMenu({ children }: { children: ReactNode }) {
   const triggerRef = useRef<HTMLDivElement>(null)
   return (
     <DropdownContext.Provider value={{ open, setOpen, triggerRef }}>
-      <div className="relative">{children}</div>
+      <div>{children}</div>
     </DropdownContext.Provider>
   )
 }
@@ -58,8 +60,33 @@ export const DropdownMenuContent: FC<{
   className?: string
   align?: 'start' | 'end'
 }> = ({ children, className, align = 'end' }) => {
-  const { open, setOpen } = useContext(DropdownContext)
+  const { open, setOpen, triggerRef } = useContext(DropdownContext)
   const ref = useRef<HTMLDivElement>(null)
+
+  const positionRef = useCallback(
+    (node: HTMLDivElement | null) => {
+      if (!node) return
+      ;(ref as React.MutableRefObject<HTMLDivElement | null>).current = node
+      const trigger = triggerRef.current
+      if (!trigger) return
+      const rect = trigger.getBoundingClientRect()
+      const menuRect = node.getBoundingClientRect()
+      let top = rect.bottom + 4
+      let left = align === 'end' ? rect.right - menuRect.width : rect.left
+
+      if (top + menuRect.height > window.innerHeight) {
+        top = rect.top - menuRect.height - 4
+      }
+      if (left < 8) left = 8
+      if (left + menuRect.width > window.innerWidth - 8) {
+        left = window.innerWidth - menuRect.width - 8
+      }
+
+      node.style.top = `${top}px`
+      node.style.left = `${left}px`
+    },
+    [align, triggerRef]
+  )
 
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
@@ -73,17 +100,18 @@ export const DropdownMenuContent: FC<{
 
   if (!open) return null
 
-  return (
+  return createPortal(
     <div
-      ref={ref}
+      ref={positionRef}
+      style={{ position: 'fixed', top: 0, left: 0 }}
       className={cn(
-        'absolute z-50 mt-1 min-w-[160px] rounded-lg border border-slate-200 bg-white p-1 shadow-lg',
-        align === 'end' ? 'right-0' : 'left-0',
+        'z-[100] min-w-[160px] rounded-lg border border-slate-200 bg-white p-1 shadow-lg',
         className
       )}
     >
       {children}
-    </div>
+    </div>,
+    document.body
   )
 }
 

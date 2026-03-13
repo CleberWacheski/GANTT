@@ -52,6 +52,7 @@ export const TaskDialog: FC<TaskDialogProps> = ({
 
   useEffect(() => {
     if (open) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- reset form state on dialog open
       setName(task?.name ?? '')
       setDescription(task?.description ?? '')
       setStartDate(task?.startDate ?? todayStr())

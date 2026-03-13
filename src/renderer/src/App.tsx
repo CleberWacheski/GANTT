@@ -56,6 +56,7 @@ export default function App() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async IPC data fetching
     loadProjects()
   }, [loadProjects])
 
@@ -154,7 +155,6 @@ export default function App() {
       }
     })
   }
-
 
   return (
     <div className="h-screen flex flex-col bg-slate-50">

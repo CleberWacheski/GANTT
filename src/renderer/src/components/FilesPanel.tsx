@@ -8,24 +8,24 @@ import {
   DropdownMenuTrigger
 } from '@renderer/components/ui/dropdown-menu'
 import { cn } from '@renderer/lib/utils'
-import type { FileRecord } from '../../../preload/index.d'
 import {
   ExternalLink,
+  Eye,
   File,
-  FileImage,
-  FileText,
-  FileSpreadsheet,
-  FileVideo,
   FileAudio,
+  FileImage,
+  FileSpreadsheet,
+  FileText,
+  FileVideo,
   FolderOpen,
   MoreVertical,
   Plus,
   Trash2,
   Upload,
-  X,
-  Eye
+  X
 } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState, type FC } from 'react'
+import type { FileRecord } from '../../../preload/index.d'
 
 interface FilesPanelProps {
   open: boolean
@@ -94,6 +94,7 @@ export const FilesPanel: FC<FilesPanelProps> = ({
   }, [projectId])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- async IPC data fetching
     if (open) loadFiles()
   }, [open, loadFiles])
 
@@ -167,6 +168,7 @@ export const FilesPanel: FC<FilesPanelProps> = ({
     const paths: string[] = []
     for (let i = 0; i < droppedFiles.length; i++) {
       const f = droppedFiles[i]
+      //@ts-ignore -- File.path is not defined in the type definition, but it is available at runtime
       if (f.path) paths.push(f.path)
     }
 

@@ -1,9 +1,9 @@
 {
   "name": "gantt",
   "version": "1.0.0",
-  "description": "An Electron application with React and TypeScript",
+  "description": "Gantt is a simple project management tool that helps you visualize and manage your tasks and projects.",
   "main": "./out/main/index.js",
-  "author": "example.com",
+  "author": "Cleber Wacheski",
   "homepage": "https://electron-vite.org",
   "scripts": {
     "format": "prettier --write .",
